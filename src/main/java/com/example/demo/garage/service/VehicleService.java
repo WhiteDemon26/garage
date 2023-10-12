@@ -32,9 +32,4 @@ public class VehicleService {
         System.out.println("The user has been correctly registered (see this response's body) !!");
         return vehicle;
     }
-
-    public Void unregisterVehicle(Long vehicleId) {
-        return vehicleRepository.de;
-        System.out.println("The user has been correctly unregistered (see this response's body) !!");
-    }
 }

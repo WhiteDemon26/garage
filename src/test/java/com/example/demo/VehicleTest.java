@@ -86,7 +86,7 @@ public class VehicleTest {
 
 
     // TODO: add the unregister vehicle functionality. Crate an 'unregistered vehicle' record in the vehicle table.
-    //  When an user unregisters his vehicle, all his previous accesses must be associated with this fake register
+    //  When an user unregisters his vehicle, all his previous accesses must be associated with this fake record
     //  in order to prevent Hibernate from deleting them.
 
 
