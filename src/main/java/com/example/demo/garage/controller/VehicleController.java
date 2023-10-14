@@ -31,10 +31,9 @@ public class VehicleController {
         return new ResponseEntity<>(submittedVehicle, HttpStatus.OK);
     }
 
-    @DeleteMapping("/add_vehicle")
-    public ResponseEntity<Void> unregisterVehicle(@RequestParam Long vehicleId) {
-        Void unSubmittedVehicle = vehicleService.unregisterVehicle(vehicleId);
-        return new ResponseEntity<>(unSubmittedVehicle, HttpStatus.OK);
+    @DeleteMapping("/unregister_vehicle")
+    public ResponseEntity<Vehicle> unregisterVehicle(@RequestParam("vehicle_id") Long vehicleId) {
+        Vehicle unregisteredVehicle = vehicleService.unregisterVehicle(vehicleId);
+        return new ResponseEntity<>(unregisteredVehicle, HttpStatus.OK);
     }
-
 }

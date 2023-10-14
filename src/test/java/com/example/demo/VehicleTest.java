@@ -90,10 +90,22 @@ public class VehicleTest {
     //  in order to prevent Hibernate from deleting them.
 
 
+    // TODO: remove the following inefficiency: when a vehicle gets unregistered, don't update the accesses in a loop one by one, save them all in one shot
+
+
     // TODO: add the following functionality: you cannot unregister a vehicle if there still an incomplete access associated with your vehicle
 
 
-    // TODO: improves the log messages, add '!' and info about ids of access and vehicles retrieved
+    // TODO: remove the following inefficiency: don't query the DB for the fake vehicle every time someone wants to unregister his vehicle
+    //  (hint: save it somewhere once and for all when it is necessary)
+
+
+    // TODO: create an 'unregistered' column in the vehicle table to indicate if the vehicle has been unsubscribed.
+    //  Comments all the code involving the fake vehicle and explain why it's now useless.
+
+
+    // TODO: improves the log messages, add '!' and info about ids of access and vehicles retrieved.
+    //  Check if \n works.
 
 
     // TODO: correct the log "You parked your Long at: 2023-10-11T10:54:47.438873200. Have a good day!"
