@@ -82,22 +82,17 @@ public class VehicleTest {
     // remove the following bug: empty vehicles list despite records access being present in the DB
     //  hint: what's the difference between ddl-auto: none and ddl-auto: create?
 
-
-
-
-    // TODO: add the unregister vehicle functionality. Crate an 'unregistered vehicle' record in the vehicle table.
+    // add the unregister vehicle functionality. Crate an 'unregistered vehicle' record in the vehicle table.
     //  When an user unregisters his vehicle, all his previous accesses must be associated with this fake register
     //  in order to prevent Hibernate from deleting them.
 
+    // remove the following inefficiency: when a vehicle gets unregistered, don't update the accesses in a loop one by one, save them all in one shot
 
-    // TODO: remove the following inefficiency: when a vehicle gets unregistered, don't update the accesses in a loop one by one, save them all in one shot
+    // add the following functionality: you cannot unregister a vehicle if there still incomplete access associated with your vehicle
 
-
-    // TODO: add the following functionality: you cannot unregister a vehicle if there still an incomplete access associated with your vehicle
-
-
-    // TODO: remove the following inefficiency: don't query the DB for the fake vehicle every time someone wants to unregister his vehicle
+    // remove the following inefficiency: don't query the DB for the fake vehicle every time someone wants to unregister his vehicle
     //  (hint: save it somewhere once and for all when it is necessary)
+
 
 
     // TODO: create an 'unregistered' column in the vehicle table to indicate if the vehicle has been unsubscribed.

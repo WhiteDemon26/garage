@@ -53,11 +53,6 @@ public class AccessService {
         }
     }
 
-    // to remove
-    private Pair<Vehicle, Access> test(Vehicle vehicle) {
-        return Pair.of(null, null);
-    }
-
 
     public Access registerVehicleAndPark(Vehicle vehicle, Integer parkingSpot) {
         vehicle = vehicleRepository.save(vehicle);

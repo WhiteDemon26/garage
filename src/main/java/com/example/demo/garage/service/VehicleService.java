@@ -19,11 +19,14 @@ public class VehicleService {
 
     public final static DateTimeFormatter CUSTOM_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
+    private Vehicle fakeVehicle;
+
     @Autowired
     private VehicleRepository vehicleRepository;
 
     @Autowired
     private AccessRepository accessRepository;
+
 
     @PostConstruct
     private void postConstruct() {
@@ -55,14 +58,21 @@ public class VehicleService {
 
     public Vehicle unregisterVehicle(Long vehicleId) {
 
-        Vehicle fakeVehicle = vehicleRepository.findByLicensePlate("XXXXXXX").get();
         Vehicle vehicleToUnregister = vehicleRepository.findById(vehicleId).get();
         List<Access> accesses = vehicleToUnregister.getAccesses();
 
-        for(Access access : accesses) {
-            access.setVehicle(fakeVehicle);
-            accessRepository.save(access);
+        if(this.fakeVehicle == null) {
+            this.fakeVehicle = this.vehicleRepository.findByLicensePlate("XXXXXXX").get();
         }
+
+        for(Access access : accesses) {
+            if(!access.getAccessComplete()) {
+                System.out.println("\n This vehicle is still parked, you cannot unregister it. \n");
+                return null;
+            }
+            access.setVehicle(this.fakeVehicle);
+        }
+        accessRepository.saveAll(accesses);
 
         System.out.println("The user has been correctly unregistered (see this response's body) !!");
         return vehicleToUnregister;
