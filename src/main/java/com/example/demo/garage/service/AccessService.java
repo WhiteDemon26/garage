@@ -9,10 +9,13 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,33 +58,48 @@ public class AccessService {
 
 
     public Access registerVehicleAndPark(Vehicle vehicle, Integer parkingSpot) {
+        vehicle.setRegistrationDate(LocalDate.now());
+        vehicle.setUnregistered(false);
         vehicle = vehicleRepository.save(vehicle);
-        System.out.println("The vehicle has been correctly registered !!");
+        System.out.println("\n The vehicle has been correctly registered !! \n");
         return parkVehicleIfPossible(vehicle.getId(), parkingSpot);
     }
 
 
     public Access parkVehicleIfPossible(Long vehicleId, Integer parkingSpot) {
 
-        Vehicle vehicle = vehicleRepository.getById(vehicleId);
+        Optional<Vehicle> vehicle = vehicleRepository.findById(vehicleId);
+        if(!vehicle.isPresent()) {
+            System.out.println("\n There is no vehicle with the id " + vehicleId + "! \n");
+            return null;
+        }
+
+        Vehicle vehicleToPark = vehicle.get();
+        if(vehicleToPark.getUnregistered()) {
+            System.out.println("\n This vehicle (id: " + vehicleId + ") is not registered, you cannot park it! \n");
+            return null;
+        }
 
         //LocalTime now = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
         LocalDateTime now = LocalDateTime.now();
+        vehicleToPark.setRegistrationDate(LocalDate.now());
+        List<Access> accesses = vehicleToPark.getAccesses();
 
-        List<Access> accesses = vehicle.getAccesses();
-
-        for(Access access : accesses) {
-            if(!access.getAccessComplete()) {
-                System.out.println("\n This vehicle is already parked \n");
-                return null;
+        if( !CollectionUtils.isEmpty(accesses) ) {
+            for(Access access : accesses) {
+                if(!access.getAccessComplete()) {
+                    System.out.println("\n This vehicle is already parked in" + access.getParkingSpot() + " from " + access.getParkingDateTime() + "! \n");
+                    return null;
+                }
             }
         }
+
         if(now.isBefore(openFrom) || now.isAfter(openUntil)) {
-            System.out.println("The parking lot is closed, return at 8:00 until 23:59 ");
+            System.out.println("\n The parking lot is closed, return at 8:00 until 23:59! \n");
             return null;
         }
         if(parkingSpot > 14 || parkingSpot < 0) {
-            System.out.println("Parking Spot number not valid!! ");
+            System.out.println("\n Parking Spot number not valid" + parkingSpot + "! \n");
             return null;
         }
         if(this.freeSpots == 0) {
@@ -89,21 +107,20 @@ public class AccessService {
             return null;
         }
         if(this.parkedVehicles[parkingSpot] != null) {
-            System.out.println("You can not park Here!! ");
+            System.out.println("\n You cannot park here, this place " + parkingSpot + " is already occupied!! \n");
             return null;
         } else {
             Access access = Access.builder()
                     .parkingDateTime(now)
-                    .parkingDateTimeStringFormat(now.format(CUSTOM_FORMATTER))
-                    .vehicle(vehicle)
+                    .vehicle(vehicleToPark)
                     .parkingSpot(parkingSpot)
                     .accessComplete(false)
                     .build();
 
             access = this.accessRepository.save(access);
-            this.parkedVehicles[parkingSpot] = vehicle;
+            this.parkedVehicles[parkingSpot] = vehicleToPark;
 
-            System.out.println("You parked your " + vehicleId.getClass().getSimpleName() + " at: " + now + ". Have a good day! ");
+            System.out.println("\n You parked your " + vehicleToPark.getClass().getSimpleName() + " at: " + now.format(CUSTOM_FORMATTER) + ". Have a good day! \n");
             this.freeSpots--;
             return access;
         }
@@ -111,10 +128,14 @@ public class AccessService {
 
 
     public Access removeVehicle(Long vehicleId) {
-        Vehicle vehicle = vehicleRepository.findById(vehicleId).get();
-        List<Access> accesses = vehicle.getAccesses();
+        Optional<Vehicle> vehicle = this.vehicleRepository.findById(vehicleId);
+        if(!vehicle.isPresent()) {
+            System.out.println("\n There is no vehicle with the id " + vehicleId + "! \n");
+            return null;
+        }
+        List<Access> accesses = vehicle.get().getAccesses();
 
-        // finds the non complete access, if it exists
+        // finds the non-complete access, if it exists
         Access incompleteAccess = null;
         for(Access access : accesses) {
             if (!access.getAccessComplete()) {
@@ -122,20 +143,20 @@ public class AccessService {
             }
         }
         if(incompleteAccess == null) {
-            System.out.println("This vehicle is not parked! ");
+            System.out.println("\n This vehicle (id: " + vehicleId + ") is not parked! \n");
             return incompleteAccess;
         }
 
         Integer parkingSpot = incompleteAccess.getParkingSpot();
         Vehicle outGoingVehicle = parkedVehicles[parkingSpot];
         parkedVehicles[parkingSpot] = null;
-        System.out.println("You have removed your " + outGoingVehicle.getClass().getSimpleName());
+        System.out.println("\n You have removed your " + outGoingVehicle.getClass().getSimpleName() + ". \n");
 
         incompleteAccess.setLeavingDateTime(LocalDateTime.now());
         String moneyToPay = calculateAmount(incompleteAccess);
 
         incompleteAccess.setAmountToPay(moneyToPay);
-        System.out.println("Final price: " + moneyToPay + "$" + ". Have a good day. ");
+        System.out.println("\n Final price: " + moneyToPay + "$" + ". Have a good day. \n");
         incompleteAccess.setAccessComplete(true);
         Access completeAccess = this.accessRepository.save(incompleteAccess);
 
@@ -159,16 +180,29 @@ public class AccessService {
     }
 
 
-    public Optional<Access> findAccess(Long id) {
-        String message = "You asked to see an access by id (see this response's body) !!";
+    public Access findAccess(Long id) {
+
+        Optional<Access> access = this.accessRepository.findById(id);
+        if(!access.isPresent()) {
+            System.out.println("\n There is no access record with the id " + id + "! \n");
+            return null;
+        }
+        String message = "\n You asked to see an access by id (see this response's body) !! \n";
         System.out.println(message);
-        return this.accessRepository.findById(id);
+        return access.get();
     }
 
 
     public List<Access> findAccessesByLicensePlates(String licensePlate) {
-        String message = "your have parked (see this response's body) !!";
+
+        Optional<Vehicle> vehicle = this.vehicleRepository.findByLicensePlate(licensePlate);
+        if(!vehicle.isPresent()) {
+            System.out.println("\n There is no accesses with the license plate " + licensePlate + "! \n");
+            return Collections.emptyList();
+        }
+        String message = "\n You asked to see all your accesses by id (see this response's body) !! \n";
         System.out.println(message);
-        return vehicleRepository.findByLicensePlate(licensePlate).get().getAccesses();
+
+        return vehicle.get().getAccesses();
     }
 }

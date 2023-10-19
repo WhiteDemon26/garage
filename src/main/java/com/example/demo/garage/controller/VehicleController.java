@@ -19,8 +19,8 @@ public class VehicleController {
 
 
     @GetMapping("/find_vehicle_by_license_plate/{license_plate}")
-    public ResponseEntity<Optional<Vehicle>> findVehicleByLicensePlate(@PathVariable ("license_plate") String licensePlate) {
-        Optional<Vehicle> vehicleFound = vehicleService.findVehicleByLicensePlate(licensePlate);
+    public ResponseEntity<Vehicle> findVehicleByLicensePlate(@PathVariable ("license_plate") String licensePlate) {
+        Vehicle vehicleFound = vehicleService.findVehicleByLicensePlate(licensePlate);
         return new ResponseEntity<>(vehicleFound, HttpStatus.OK);
     }
 
@@ -31,8 +31,16 @@ public class VehicleController {
         return new ResponseEntity<>(submittedVehicle, HttpStatus.OK);
     }
 
-    @DeleteMapping("/unregister_vehicle")
-    public ResponseEntity<Vehicle> unregisterVehicle(@RequestParam("vehicle_id") Long vehicleId) {
+
+    @PutMapping("/re_register_vehicle/{license_plate}")
+    public ResponseEntity<Vehicle> reRegisterVehicle(@PathVariable ("license_plate") String licensePlate) {
+        Vehicle reSubmittedVehicle = vehicleService.reRegisterVehicle(licensePlate);
+        return new ResponseEntity<>(reSubmittedVehicle, HttpStatus.OK);
+    }
+
+
+    @PutMapping("/unregister_vehicle/{vehicle_id}")
+    public ResponseEntity<Vehicle> unregisterVehicle(@PathVariable ("vehicle_id") Long vehicleId) {
         Vehicle unregisteredVehicle = vehicleService.unregisterVehicle(vehicleId);
         return new ResponseEntity<>(unregisteredVehicle, HttpStatus.OK);
     }

@@ -93,36 +93,40 @@ public class VehicleTest {
     // remove the following inefficiency: don't query the DB for the fake vehicle every time someone wants to unregister his vehicle
     //  (hint: save it somewhere once and for all when it is necessary)
 
+    // add the registration date to the vehicle table and related functionality app-side. Update the ddl script
 
+    // remove the pdt_string_format column from the access table. Do you have to update the ddl script?
 
-    // TODO: create an 'unregistered' column in the vehicle table to indicate if the vehicle has been unsubscribed.
+    // Complete the new unregister vehicle functionality started by creating the 'unregistered' column in the vehicle table
+    //  to indicate if the vehicle has been unsubscribed.
     //  Comments all the code involving the fake vehicle and explain why it's now useless.
 
+    // add a re-register vehicle functionality. Why can this functionality not be served by the register vehicle endpoint?
+    //  Users must not be able to re-register a registered vehicle.
 
-    // TODO: improves the log messages, add '!' and info about ids of access and vehicles retrieved.
+    // add a control to the register vehicle functionality: users must not be able to register a  vehicle already in the DB
+    //  (hint: use the license plate)
+
+    // add suitable code in case the optionals you retrieve form DB are empty.
+
+    // improves the log messages, add '!' and info about ids of access and vehicles retrieved.
     //  Check if \n works.
 
-
-    // TODO: correct the log "You parked your Long at: 2023-10-11T10:54:47.438873200. Have a good day!"
-
-
-    // TODO: add the registration date to the vehicle table and related functionality app-side
+    // correct the log "You parked your Vehicle at: 2023-10-11T10:54:47.438873200. Have a good day!"
 
 
-    // TODO: remove the pdt_string_format column from the access table
+
+
+    // TODO: add a new functionality for evaluating the length of time an access lasted: x seconds or minutes, or hours, etc.
+    //  This information needs to be added to the access table and retrieved both with a specific endpoint and when an user leaves
 
 
     // TODO: remove from AccessService any info about the state of the garage, put it in a new class specific for that.
 
 
 
-    // make licensePlate the id of Vehicle
 
-
-    // add a field in the Access class indicating if the access is complete or not. Integrate it with the rest of the app.
-
-
-    // est all the APIs and verify everything works; register other vehicles, park them and remove some of them.
+    // make licensePlate the id of Vehicle and refactor the whole app accordingly
 
 
     // change your payment system in case someone leaves his vehicle in the parking lot for a whole night.
@@ -143,7 +147,7 @@ public class VehicleTest {
 
         Car shelbyMustang = Car.builder()
                 .model("Ford")
-                .year(2006)
+                .year(2002)
                 .cubeCapacity(5200)
                 .porte(2)
                 .alimentazione("Benzina")
