@@ -21,8 +21,8 @@ public class AccessController {
 
 
     @GetMapping("/find_access_by_id/{access_id}")
-    public ResponseEntity<Optional<Access>> findAccess(@PathVariable("access_id") Long accessId) {
-        Optional<Access> fondAccess = accessService.findAccess(accessId);
+    public ResponseEntity<Access> findAccess(@PathVariable("access_id") Long accessId) {
+        Access fondAccess = accessService.findAccess(accessId);
         return new ResponseEntity<>(fondAccess, HttpStatus.OK);
     }
 

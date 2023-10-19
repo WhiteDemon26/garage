@@ -5,6 +5,9 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.List;
 
 @Entity(name = "com.example.demo.raz.garage.Vehicle")
@@ -32,8 +35,15 @@ public class Vehicle implements Electric {
     @Column
     private Boolean electric;
 
-    @Column(nullable = false, name = "license_plate", unique = true)
+    @Column(nullable = false, name = "license_plate", unique = true, length = 20)
     private String licensePlate;
+
+    @Column(nullable = false)
+    private Boolean unregistered;
+
+    @Column(nullable = false, name = "registration_date")
+    private LocalDate registrationDate;
+
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

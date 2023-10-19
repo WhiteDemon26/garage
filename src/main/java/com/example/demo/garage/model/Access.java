@@ -26,9 +26,6 @@ public class Access {
     @Column(nullable = false, name = "parking_date_time")
     private LocalDateTime parkingDateTime;
 
-    @Column(nullable = false, name = "pdt_string_format")
-    private String parkingDateTimeStringFormat;
-
     @Column(name = "leaving_date_time")
     private LocalDateTime leavingDateTime;
 
