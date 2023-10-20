@@ -5,7 +5,6 @@ import com.example.demo.garage.model.Access;
 import com.example.demo.garage.model.Vehicle;
 import com.example.demo.garage.repository.VehicleRepository;
 import lombok.Data;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,7 +84,7 @@ public class AccessService {
         vehicleToPark.setRegistrationDate(LocalDate.now());
         List<Access> accesses = vehicleToPark.getAccesses();
 
-        if( !CollectionUtils.isEmpty(accesses) ) {
+        if(!CollectionUtils.isEmpty(accesses)) {
             for(Access access : accesses) {
                 if(!access.getAccessComplete()) {
                     System.out.println("\n This vehicle is already parked in" + access.getParkingSpot() + " from " + access.getParkingDateTime() + "! \n");
@@ -155,6 +154,10 @@ public class AccessService {
         incompleteAccess.setLeavingDateTime(LocalDateTime.now());
         String moneyToPay = calculateAmount(incompleteAccess);
 
+        String accessLength = findAccessLength(incompleteAccess);
+        System.out.println("\n You have parked your " + outGoingVehicle.getClass().getSimpleName() + " for " + accessLength + " time. \n");
+
+        incompleteAccess.setAccessLength(accessLength);
         incompleteAccess.setAmountToPay(moneyToPay);
         System.out.println("\n Final price: " + moneyToPay + "$" + ". Have a good day. \n");
         incompleteAccess.setAccessComplete(true);
@@ -177,6 +180,37 @@ public class AccessService {
             String moneyToPay = DecimalFormat.format(difference * minuteRate);
             return moneyToPay;
         }
+    }
+
+
+    private String findAccessLength(Access access) {
+
+        LocalDateTime parkingDateTime = access.getParkingDateTime();
+        LocalDateTime leavingDateTime = access.getLeavingDateTime();
+
+        long difference = MINUTES.between(parkingDateTime, leavingDateTime);
+
+        if(difference == 0) {
+            return "<1m";
+        }
+
+        long days = difference / (60 * 24);
+        long hours = (difference - (days * (60 * 24))) / 60;
+        long minutes = (difference - days) % 60;
+
+        String timeLength = "";
+
+        if(minutes != 0) {
+            timeLength = minutes + "m";
+        }
+        if(hours != 0) {
+            timeLength = hours + "h " + timeLength;
+        }
+        if(days != 0) {
+            timeLength = days + "d " + timeLength;
+        }
+
+        return timeLength;
     }
 
 

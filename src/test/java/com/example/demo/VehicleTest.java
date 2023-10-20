@@ -114,11 +114,10 @@ public class VehicleTest {
 
     // correct the log "You parked your Vehicle at: 2023-10-11T10:54:47.438873200. Have a good day!"
 
-
-
-
-    // TODO: add a new functionality for evaluating the length of time an access lasted: x seconds or minutes, or hours, etc.
+    // add a new functionality for evaluating the length of time an access lasted: x seconds or minutes, or hours, etc.
     //  This information needs to be added to the access table and retrieved both with a specific endpoint and when an user leaves
+
+
 
 
     // TODO: remove from AccessService any info about the state of the garage, put it in a new class specific for that.
