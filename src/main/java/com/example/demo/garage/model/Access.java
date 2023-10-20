@@ -38,6 +38,9 @@ public class Access {
     @Column(nullable = false, name = "access_complete")
     private Boolean accessComplete;
 
+    @Column(name = "access_length")
+    private String accessLength;
+
     @EqualsAndHashCode.Exclude
     @JsonBackReference
     @ManyToOne(fetch = FetchType.EAGER)
