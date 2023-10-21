@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @Data
@@ -27,23 +26,16 @@ public class AccessController {
     }
 
 
-    @PostMapping("/register_vehicle_and_park")
-    public ResponseEntity<Access> registerVehicleAndPark(@RequestBody Vehicle vehicle, @RequestParam("parking_spot") Integer parkingSpot) {
-        Access newAccess = accessService.registerVehicleAndPark(vehicle, parkingSpot);
-        return new ResponseEntity<>(newAccess, HttpStatus.OK);
-    }
-
-
     @PostMapping("/park_vehicle")
     public ResponseEntity<Access> addParkedVehicle(@RequestParam("vehicle_id") Long vehicleId, @RequestParam("parking_spot") Integer parkingSpot) {
-        Access parkedVehicle = accessService.parkVehicleIfPossible(vehicleId, parkingSpot);
+        Access parkedVehicle = accessService.createNewAccessIn(vehicleId, parkingSpot);
         return new ResponseEntity<>(parkedVehicle, HttpStatus.OK);
     }
 
 
     @PutMapping("/remove_vehicle/{vehicle_id}")
     public ResponseEntity<Access> removeParkedVehicle(@PathVariable("vehicle_id") Long vehicleId) {
-        Access leavingVehicle = accessService.removeVehicle(vehicleId);
+        Access leavingVehicle = accessService.completeAccessOut(vehicleId);
         return new ResponseEntity<>(leavingVehicle, HttpStatus.OK);
     }
 

@@ -29,6 +29,9 @@ public class VehicleService {
     @Autowired
     private AccessRepository accessRepository;
 
+    @Autowired
+    private AccessService accessService;
+
 
     // NOT TO USE
     //@PostConstruct
@@ -85,6 +88,16 @@ public class VehicleService {
         System.out.println("\n Your vehicle has been correctly re-registered (see this response's body) !! \n");
         return vehicle;
     }
+
+
+    public Access registerVehicleAndPark(Vehicle vehicle, Integer parkingSpot) {
+        vehicle.setRegistrationDate(LocalDate.now());
+        vehicle.setUnregistered(false);
+        vehicle = vehicleRepository.save(vehicle);
+        System.out.println("\n The vehicle has been correctly registered !! \n");
+        return accessService.createNewAccessIn(vehicle.getId(), parkingSpot);
+    }
+
 
     public Vehicle unregisterVehicle(Long vehicleId) {
 

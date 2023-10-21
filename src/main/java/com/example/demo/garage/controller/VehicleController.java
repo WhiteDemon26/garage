@@ -1,5 +1,6 @@
 package com.example.demo.garage.controller;
 
+import com.example.demo.garage.model.Access;
 import com.example.demo.garage.model.Vehicle;
 import com.example.demo.garage.service.VehicleService;
 import lombok.Data;
@@ -25,10 +26,17 @@ public class VehicleController {
     }
 
 
-    @PostMapping("/add_vehicle")
+    @PostMapping("/register_vehicle")
     public ResponseEntity<Vehicle> registerVehicle(@RequestBody Vehicle vehicle) {
         Vehicle submittedVehicle = vehicleService.registerVehicle(vehicle);
         return new ResponseEntity<>(submittedVehicle, HttpStatus.OK);
+    }
+
+
+    @PostMapping("/register_vehicle_and_park")
+    public ResponseEntity<Access> registerVehicleAndPark(@RequestBody Vehicle vehicle, @RequestParam("parking_spot") Integer parkingSpot) {
+        Access newAccess = vehicleService.registerVehicleAndPark(vehicle, parkingSpot);
+        return new ResponseEntity<>(newAccess, HttpStatus.OK);
     }
 
 

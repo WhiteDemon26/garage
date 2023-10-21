@@ -117,11 +117,15 @@ public class VehicleTest {
     // add a new functionality for evaluating the length of time an access lasted: x seconds or minutes, or hours, etc.
     //  This information needs to be added to the access table and retrieved both with a specific endpoint and when an user leaves
 
+    // remove from AccessService any info about the state of the garage and associated logic. Put it in a new class specific for that.
 
 
 
-    // TODO: remove from AccessService any info about the state of the garage, put it in a new class specific for that.
 
+    // TODO: move the checks on if the vehicle is already registered or parked in to Garage (when a user tries to parl his vehicle).
+
+
+    // TODO: create a parkVehicle() method inside Garage that takes care of filling and emptying the parking spots and keeps track of the number of the available ones
 
 
 
@@ -182,10 +186,10 @@ public class VehicleTest {
                 //.parkingDateTime(LocalDateTime.of(2023, 8, 22, 12, 20))
                 .build();
 
-        accessService.parkVehicleIfPossible(5L, 0);
-        accessService.parkVehicleIfPossible(5L, 1);
-        accessService.parkVehicleIfPossible(5L, 2);
-        accessService.parkVehicleIfPossible(5L,3);
+        accessService.createNewAccessIn(5L, 0);
+        accessService.createNewAccessIn(5L, 1);
+        accessService.createNewAccessIn(5L, 2);
+        accessService.createNewAccessIn(5L,3);
 
 
         System.out.println("");
