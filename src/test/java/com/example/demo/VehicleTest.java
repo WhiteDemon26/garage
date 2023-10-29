@@ -114,18 +114,21 @@ public class VehicleTest {
 
     // correct the log "You parked your Vehicle at: 2023-10-11T10:54:47.438873200. Have a good day!"
 
-    // add a new functionality for evaluating the length of time an access lasted: x seconds or minutes, or hours, etc.
-    //  This information needs to be added to the access table and retrieved both with a specific endpoint and when an user leaves
+    // add a new functionality for evaluating the length of time access lasted: x seconds or minutes, or hours, etc.
+    //  This information needs to be added to the access table and retrieved both with a specific endpoint and when a user leaves
 
     // remove from AccessService any info about the state of the garage and associated logic. Put it in a new class specific for that.
 
+    // move the checks on if the vehicle is already registered or parked in to Garage (when a user tries to park his vehicle).
 
 
 
-    // TODO: move the checks on if the vehicle is already registered or parked in to Garage (when a user tries to parl his vehicle).
+
+    // TODO: use parkVehicle() in the postConstruct to remove the repetition of code, but
+    //  avoid the log message in parkVehicle() when it's called in this way
 
 
-    // TODO: create a parkVehicle() method inside Garage that takes care of filling and emptying the parking spots and keeps track of the number of the available ones
+    // TODO: improve payment system when a vehicle go out of your garage after 1 day he pays 25$, but when he goes out after 1 day and 4 hours he pays still 25$ why?
 
 
 

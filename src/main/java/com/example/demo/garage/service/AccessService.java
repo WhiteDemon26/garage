@@ -8,18 +8,13 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
-import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static com.example.demo.garage.service.VehicleService.CUSTOM_FORMATTER;
-import static java.time.temporal.ChronoUnit.DAYS;
-import static java.time.temporal.ChronoUnit.MINUTES;
 
 @Data
 @Component
@@ -47,38 +42,23 @@ public class AccessService {
         }
 
         Vehicle vehicleToPark = vehicle.get();
-        if(vehicleToPark.getUnregistered()) {
-            System.out.println("\n This vehicle (id: " + vehicleId + ") is not registered, you cannot park it! \n");
+        if(garage.checkIfVehicleIsRegisteredOrParked(vehicleToPark)) {
             return null;
         }
 
-        List<Access> accesses = vehicleToPark.getAccesses();
-        if(!CollectionUtils.isEmpty(accesses)) {
-            for(Access access : accesses) {
-                if(!access.getAccessComplete()) {
-                    System.out.println("\n This vehicle is already parked in" + access.getParkingSpot() + " from " + access.getParkingDateTime() + "! \n");
-                    return null;
-                }
-            }
-        }
-
         LocalDateTime now = LocalDateTime.now();
-        if( garage.checkIfParkingIsPossible(now, parkingSpot) ) {
+        if (garage.checkIfParkingIsPossible(now, parkingSpot)) {
 
             Access access = Access.builder()
-                    .parkingDateTime(now)
-                    .vehicle(vehicleToPark)
-                    .parkingSpot(parkingSpot)
-                    .accessComplete(false)
-                    .build();
+                                    .parkingDateTime(now)
+                                    .vehicle(vehicleToPark)
+                                    .parkingSpot(parkingSpot)
+                                    .accessComplete(false)
+                                    .build();
             access = this.accessRepository.save(access);
 
-            garage.parkedVehicles[parkingSpot] = vehicleToPark;
-            System.out.println("\n You parked your " + vehicleToPark.getClass().getSimpleName() + " at: " + now.format(CUSTOM_FORMATTER) + ". Have a good day! \n");
-            garage.freeSpots--;
-
+            garage.parkVehicle(vehicleToPark, parkingSpot, now);
             return access;
-
         } else {
             return null;
         }
@@ -106,16 +86,13 @@ public class AccessService {
             return incompleteAccess;
         }
 
-        Integer parkingSpot = incompleteAccess.getParkingSpot();
-        Vehicle outGoingVehicle = garage.parkedVehicles[parkingSpot];
-        garage.parkedVehicles[parkingSpot] = null;
-        System.out.println("\n You have removed your " + outGoingVehicle.getClass().getSimpleName() + ". \n");
+        Vehicle outGoingVehicle = garage.removeVehicle(incompleteAccess);
 
         incompleteAccess.setLeavingDateTime(LocalDateTime.now());
         String moneyToPay = garage.calculateAmount(incompleteAccess);
 
         String accessLength = garage.findAccessLength(incompleteAccess);
-        System.out.println("\n You have parked your " + outGoingVehicle.getClass().getSimpleName() + " for " + accessLength + " time. \n");
+        System.out.println("\n You parked your " + outGoingVehicle.getClass().getSimpleName() + " for " + accessLength + " time. \n");
 
         incompleteAccess.setAccessLength(accessLength);
         incompleteAccess.setAmountToPay(moneyToPay);

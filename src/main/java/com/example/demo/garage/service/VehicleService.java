@@ -71,6 +71,7 @@ public class VehicleService {
         return vehicle;
     }
 
+
     public Vehicle reRegisterVehicle(String licensePlate) {
 
         Optional<Vehicle> vehicleFound = this.vehicleRepository.findByLicensePlate(licensePlate);
@@ -127,6 +128,7 @@ public class VehicleService {
         System.out.println("\n The vehicle has been correctly unregistered (see this response's body) !! \n");
         return vehicle;
     }
+
 
     // NOT TO USE
     public Vehicle unregisterVehicleOldVersion(Long vehicleId) {
