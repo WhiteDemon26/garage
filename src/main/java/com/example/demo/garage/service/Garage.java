@@ -36,7 +36,7 @@ public class Garage {
 
 
     @PostConstruct
-    private void postConstruct() {
+    public void postConstruct() {
         List<Access> parkedVehiclesRecords = accessRepository.findByAccessComplete(false);
         for(Access access : parkedVehiclesRecords) {
             int parkedSpot = access.getParkingSpot();
@@ -132,12 +132,12 @@ public class Garage {
 
         long days = difference / (60 * 24);
         long hours = (difference - (days * (60 * 24))) / 60;
-        long minutes = (difference - days) % 60;
+        long minutes = (difference - (days * (60 * 24))) % 60;
 
         String timeLength = "";
 
         if(minutes != 0) {
-            timeLength = minutes + "m";
+            timeLength = minutes + "m ";
         }
         if(hours != 0) {
             timeLength = hours + "h " + timeLength;
