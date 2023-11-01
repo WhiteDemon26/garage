@@ -2,15 +2,12 @@ package com.example.demo.garage.service;
 
 import com.example.demo.garage.model.Access;
 import com.example.demo.garage.model.Vehicle;
-import com.example.demo.garage.repository.AccessRepository;
 import com.example.demo.garage.repository.VehicleRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -21,13 +18,8 @@ public class VehicleService {
 
     public final static DateTimeFormatter CUSTOM_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    //private Vehicle fakeVehicle;
-
     @Autowired
     private VehicleRepository vehicleRepository;
-
-    @Autowired
-    private AccessRepository accessRepository;
 
     @Autowired
     private AccessService accessService;
@@ -60,12 +52,13 @@ public class VehicleService {
 
 
     public Vehicle registerVehicle(Vehicle vehicle) {
-        if(!vehicle.getLicensePlate().isEmpty()) {
+        if(vehicleRepository.findByLicensePlate(vehicle.getLicensePlate()).isPresent()) {
             System.out.println("\n A vehicle with the license plate " + vehicle.getLicensePlate() + " is already registered! \n");
             return null;
         }
         LocalDate registrationDate = LocalDate.now();
         vehicle.setRegistrationDate(registrationDate);
+        vehicle.setUnregistered(false);
         vehicle = vehicleRepository.save(vehicle);
         System.out.println("\n The user has been correctly registered (see this response's body) !! \n");
         return vehicle;
@@ -76,7 +69,7 @@ public class VehicleService {
 
         Optional<Vehicle> vehicleFound = this.vehicleRepository.findByLicensePlate(licensePlate);
         if(!vehicleFound.isPresent()) {
-            System.out.println("\n A vehicle with the license plate " + licensePlate + " is not present! \n");
+            System.out.println("\n No vehicle with the license plate " + licensePlate + " found! \n");
             return null;
         }
         Vehicle vehicle = vehicleFound.get();
@@ -92,6 +85,10 @@ public class VehicleService {
 
 
     public Access registerVehicleAndPark(Vehicle vehicle, Integer parkingSpot) {
+        if(vehicleRepository.findByLicensePlate(vehicle.getLicensePlate()).isPresent()) {
+            System.out.println("\n A vehicle with the license plate " + vehicle.getLicensePlate() + " is already registered! \n");
+            return null;
+        }
         vehicle.setRegistrationDate(LocalDate.now());
         vehicle.setUnregistered(false);
         vehicle = vehicleRepository.save(vehicle);
@@ -113,7 +110,7 @@ public class VehicleService {
         Boolean vehicleUnregistered = vehicle.getUnregistered();
 
         if(vehicleUnregistered) {
-            System.out.println("\n The vehicle (id: " + vehicleId + ") is just unregistered, you cannot unregister it again. \n");
+            System.out.println("\n The vehicle (id: " + vehicleId + ") is already unregistered, you cannot unregister it again. \n");
             return null;
         }
 
@@ -127,31 +124,5 @@ public class VehicleService {
         vehicle = vehicleRepository.save(vehicle);
         System.out.println("\n The vehicle has been correctly unregistered (see this response's body) !! \n");
         return vehicle;
-    }
-
-
-    // NOT TO USE
-    public Vehicle unregisterVehicleOldVersion(Long vehicleId) {
-
-        Vehicle vehicleToUnregister = vehicleRepository.findById(vehicleId).get();
-        List<Access> accesses = vehicleToUnregister.getAccesses();
-
-        /*
-        if(this.fakeVehicle == null) {
-            this.fakeVehicle = this.vehicleRepository.findByLicensePlate("XXXXXXX").get();
-        }
-
-        for(Access access : accesses) {
-            if(!access.getAccessComplete()) {
-                System.out.println("\n This vehicle is still parked, you cannot unregister it. \n");
-                return null;
-            }
-            access.setVehicle(this.fakeVehicle);
-        }
-        */
-        accessRepository.saveAll(accesses);
-
-        System.out.println("\n The user has been correctly unregistered (see this response's body) !! \n");
-        return vehicleToUnregister;
     }
 }
